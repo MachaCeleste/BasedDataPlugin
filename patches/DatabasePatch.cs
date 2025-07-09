@@ -13,14 +13,7 @@ public class DatabasePatch
         {
             if (!string.IsNullOrEmpty(__result))
             {
-                try
-                {
-                    JsonConvert.DeserializeObject<Library>(__result);
-                }
-                catch (Exception ex)
-                {
-                    __result = Encoding.UTF8.GetString(Convert.FromBase64String(__result));
-                }
+                __result = Encoding.UTF8.GetString(Convert.FromBase64String(__result));
             }
         }
     }
@@ -29,6 +22,15 @@ public class DatabasePatch
     class SetContenidoPatch
     {
         static void Prefix(ref FileSystem.Archivo file, ref string contenido, ref string prevID)
+        {
+            contenido = Convert.ToBase64String(Encoding.UTF8.GetBytes(contenido));
+        }
+    }
+
+    [HarmonyPatch(typeof(Database), "AddLibraryContent")]
+    class AddLibraryContentPatch
+    {
+        static void Prefix(ref string ID, ref string contenido)
         {
             contenido = Convert.ToBase64String(Encoding.UTF8.GetBytes(contenido));
         }
